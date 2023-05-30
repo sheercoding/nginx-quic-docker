@@ -1,0 +1,38 @@
+# FROM ubuntu:22.04
+FROM chao123/ngxquic-base
+
+WORKDIR /root/logs
+
+WORKDIR /opt
+COPY boringssl /opt/boringssl
+RUN \
+	cd boringssl && \
+	git checkout a75bee541428228714696dbff72d33f20b6899da && \
+	mkdir build && cd build && \
+	cmake .. -DBUILD_SHARED_LIBS=1 -DCMAKE_BUILD_TYPE=Release --install-prefix=/usr/local && \
+	make -j && \
+	make install && \
+	cd ../.. 
+
+WORKDIR /opt
+COPY nginx-quic /opt/nginx-quic
+RUN \
+	cd nginx-quic && \
+	hg update 8347620e0e76 && \
+	./auto/configure --with-debug \
+		--with-http_v3_module \
+		--with-select_module \
+		--with-cc-opt='-I../boringssl/include' \
+		--with-ld-opt='-L../boringssl/build/ssl -L../boringssl/build/crypto' && \
+	make -j && \
+	make install && \
+	cd .. 
+
+WORKDIR /opt
+COPY nginx_etc /root/nginx_etc
+# RUN \
+# 	rm * -rf
+
+ADD startup.sh /opt
+RUN chmod a+x /opt/startup.sh
+# ENTRYPOINT ["/opt/entrypoint.sh"]
