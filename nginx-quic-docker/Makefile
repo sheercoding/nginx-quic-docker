@@ -3,7 +3,8 @@
 ncore:=24
 nginx_etc:=$(nginx_etc)
 docker_tag:=latest
-docker_file:=Dockerfile_latest
+#docker_file:=Dockerfile_latest
+docker_file:=Dockerfile
 
 .PHONY: ngxquic-perf
 ngxquic-perf: ## Run builder for producing ngxquic-image
@@ -36,8 +37,8 @@ ngxquic-sh: ## run ngxquic and shell in this container
 		-it \
 		chao123/ngxquic:${docker_tag}
 
-.PHONY: ngxquic-exp-img
-ngxquic-exp-img: ## export docker image
+.PHONY: ngxquic-save-img
+ngxquic-save-img: ## export docker image
 	@docker save chao123/ngxquic:${docker_tag} > ngxquic_${docker_tag}.tar
 
 .PHONY: help

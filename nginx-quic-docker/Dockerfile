@@ -19,7 +19,7 @@ COPY nginx-quic /opt/nginx-quic
 RUN \
 	cd nginx-quic && \
 	hg update 8347620e0e76 && \
-	./auto/configure --with-debug \
+	./auto/configure  \
 		--with-http_v3_module \
 		--with-select_module \
 		--with-cc-opt='-I../boringssl/include' \
